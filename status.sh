@@ -9,18 +9,19 @@ ADDRESS_TEST="8.8.8.8"
 function send_alert() {
     fecha=$(date +"%Y-%m-%d %H:%M:%S")
     mensaje="La conexión a Internet está caída"
-    /usr/bin/zenity "Alerta de red" "$fecha - $mensaje"
+    /usr/bin/zenity --info --text="ALERTA DE RED!!!\n\n$fecha - $mensaje"
+    exit 1
 }
 
 function send_ok() {
     fecha=$(date +"%Y-%m-%d %H:%M:%S")
     mensaje="¡La conexión a Internet está OK!"
-    /usr/bin/zenity "Alerta de red" "$fecha - $mensaje"
+
 }
 
 if ping -c 3 -W 1 $ADDRESS_TEST > /dev/null 2>&1; then
     # La conexión está activa
-    send_ok
+    exit 1
 else
     send_alert
 fi
