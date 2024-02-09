@@ -36,4 +36,3 @@ do
     # Esperar antes de volver a verificar
     sleep 30 # Espera 30 segundos antes de volver a verificar
 done
-
