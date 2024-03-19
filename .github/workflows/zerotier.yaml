@@ -9,12 +9,8 @@
   run: |
     count=5
     while ! ping -c 1 ${{ secrets.ZEROTIER_HOST_IP }} ; do
-      echo "Waiting for host to respond... Attempts left: $count" ;
+      echo "waiting..." ;
       sleep 1 ;
       let count=count-1
-      if [ $count -eq 0 ]; then
-        echo "Host did not respond after multiple attempts."
-        exit 1
-      fi
     done
-    echo "Ping successful"
+    echo "ping success"
