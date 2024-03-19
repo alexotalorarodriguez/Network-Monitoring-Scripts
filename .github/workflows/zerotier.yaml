@@ -1,0 +1,20 @@
+- name: ZeroTier
+  uses: zerotier/github-action@v1
+  with:
+    network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+    auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
+
+- name: ping host
+  shell: bash
+  run: |
+    count=5
+    while ! ping -c 1 ${{ secrets.ZEROTIER_HOST_IP }} ; do
+      echo "Waiting for host to respond... Attempts left: $count" ;
+      sleep 1 ;
+      let count=count-1
+      if [ $count -eq 0 ]; then
+        echo "Host did not respond after multiple attempts."
+        exit 1
+      fi
+    done
+    echo "Ping successful"
