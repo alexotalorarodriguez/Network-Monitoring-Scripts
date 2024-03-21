@@ -1,32 +1,41 @@
-name: SonarQube Integration
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main  # rama principal
+
+jobs:
   sonarqube:
-    name: SonarQube Integration
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
-        fetch-depth: 0
-    - name: ZeroTier
-      uses: zerotier/github-action@v1.0.1
-      with:
-        network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
-        auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
-    
-    - name: ping host
-      shell: bash
-      run: |
-        count=10
-        while ! ping -c 1 ${{ secrets.ZEROTIER_HOST_IP }} ; do
-          echo "waiting..." ;
-          sleep 1 ;
-          let count=count-1
-      done
-      echo "ping success"
+      - name: ZeroTier Configuration
+        uses: zerotier/github-action@v1
+        with:
+          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+          auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} #Sonar Token generated 
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #example URL (https://sq.bswlog.co.in/)
+      - name: Ping Host
+        shell: bash
+        run: |
+          count=5
+          while ! ping -c 1 ${{ secrets.ZEROTIER_HOST_IP }} ; do
+            echo "waiting..." ;
+            sleep 1 ;
+            let count=count-1
+          done
+          echo "ping success"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup SonarQube Scanner
+        uses: sonarsource/sonarqube-scan-action@v1
+        with:
+          sonar-url: 'http://172.29.15.83:9000'  # Servidor
+          project-key: 'test'
+          project-name: 'test'
+          project-version: '1.0'
+          sonar-login: ${{ secrets.SONAR_TOKEN }}  # agregar TOKEN en la configuración del repositorio
+
